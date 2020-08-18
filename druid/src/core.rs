@@ -768,7 +768,7 @@ impl<T: Data, W: Widget<T>> WidgetPod<T, W> {
                         _ => false,
                     }
                 }
-                #[cfg(test)]
+                //#[cfg(test)]
                 InternalLifeCycle::DebugRequestState { widget, state_cell } => {
                     if *widget == self.id() {
                         state_cell.set(self.state.clone());
@@ -779,7 +779,7 @@ impl<T: Data, W: Widget<T>> WidgetPod<T, W> {
                         self.state.children.may_contain(&widget)
                     }
                 }
-                #[cfg(test)]
+                //#[cfg(test)]
                 InternalLifeCycle::DebugInspectState(f) => {
                     f.call(&self.state);
                     true

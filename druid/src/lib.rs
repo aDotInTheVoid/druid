@@ -154,8 +154,8 @@ mod localization;
 mod menu;
 mod mouse;
 #[cfg(not(target_arch = "wasm32"))]
-#[cfg(test)]
-mod tests;
+//#[cfg(test)]
+pub mod tests;
 pub mod text;
 pub mod theme;
 mod util;

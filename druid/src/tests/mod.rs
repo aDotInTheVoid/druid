@@ -14,8 +14,8 @@
 
 //! Additional unit tests that cross file or module boundaries.
 
-pub(crate) mod harness;
-mod helpers;
+pub mod harness;
+pub mod helpers;
 mod layout_tests;
 
 use std::cell::Cell;

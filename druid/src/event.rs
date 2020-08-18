@@ -239,12 +239,12 @@ pub enum InternalLifeCycle {
     /// somewhere in the tree is as expected. In that case you can dispatch
     /// this event, specifying the widget in question, and that widget will
     /// set its state in the provided `Cell`, if it exists.
-    #[cfg(test)]
+    //#[cfg(test)]
     DebugRequestState {
         widget: WidgetId,
         state_cell: StateCell,
     },
-    #[cfg(test)]
+    //#[cfg(test)]
     DebugInspectState(StateCheckFn),
 }
 
@@ -297,11 +297,11 @@ impl Event {
     }
 }
 
-#[cfg(test)]
+//#[cfg(test)]
 pub(crate) use state_cell::{StateCell, StateCheckFn};
 
-#[cfg(test)]
-mod state_cell {
+//#[cfg(test)]
+pub(crate) mod state_cell {
     use crate::core::WidgetState;
     use crate::WidgetId;
     use std::{cell::RefCell, rc::Rc};

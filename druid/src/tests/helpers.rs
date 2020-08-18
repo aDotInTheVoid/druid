@@ -63,7 +63,7 @@ pub struct ReplaceChild<T> {
 ///
 /// Make one like this:
 ///
-/// ```
+/// ```compile_fail
 /// let recording = Recording::default();
 /// let widget = Label::new().padding(4.0).record(&recording);
 ///

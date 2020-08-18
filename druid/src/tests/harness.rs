@@ -20,6 +20,7 @@ use crate::core::{CommandQueue, WidgetState};
 use crate::ext_event::ExtEventHost;
 use crate::piet::{BitmapTarget, Device, Error, ImageFormat, Piet};
 use crate::*;
+use crate::event::{StateCell, StateCheckFn};
 
 pub(crate) const DEFAULT_SIZE: Size = Size::new(400., 400.);
 
