@@ -15,7 +15,7 @@
 //! A label widget.
 
 use crate::piet::{
-    Color, FontBuilder, PietText, PietTextLayout, RenderContext, Text, TextLayout,
+    Color, FontFamily, PietText, PietTextLayout, RenderContext, Text, TextAttribute, TextLayout,
     TextLayoutBuilder, UnitPoint,
 };
 use crate::{
@@ -198,11 +198,14 @@ impl<T: Data> Label<T> {
     fn get_layout(&mut self, t: &mut PietText, env: &Env) -> PietTextLayout {
         let font_name = self.font.resolve(env);
         let font_size = self.size.resolve(env);
+        let color = self.color.resolve(env);
 
         // TODO: caching of both the format and the layout
-        let font = t.new_font_by_name(font_name, font_size).build().unwrap();
         self.text.with_display_text(|text| {
-            t.new_text_layout(&font, &text, std::f64::INFINITY)
+            let font = t.font_family(font_name).unwrap_or(FontFamily::SYSTEM_UI);
+            t.new_text_layout(&text)
+                .font(font, font_size)
+                .default_attribute(TextAttribute::ForegroundColor(color.clone()))
                 .build()
                 .unwrap()
         })
@@ -271,7 +274,7 @@ impl<T: Data> Widget<T> for Label<T> {
         let font_size = self.size.resolve(env);
         let text_layout = self.get_layout(&mut ctx.text(), env);
         bc.constrain(Size::new(
-            text_layout.width() + 2. * LABEL_X_PADDING,
+            text_layout.size().width + 2. * LABEL_X_PADDING,
             font_size * LINE_HEIGHT_FACTOR,
         ))
     }
@@ -283,9 +286,8 @@ impl<T: Data> Widget<T> for Label<T> {
 
         // Find the origin for the text
         let origin = Point::new(LABEL_X_PADDING, line_height * BASELINE_GUESS_FACTOR);
-        let color = self.color.resolve(env);
 
-        ctx.draw_text(&text_layout, origin, &color);
+        ctx.draw_text(&text_layout, origin);
     }
 }
 

@@ -19,9 +19,7 @@ use std::collections::{HashMap, VecDeque};
 use crate::bloom::Bloom;
 use crate::contexts::ContextState;
 use crate::kurbo::{Affine, Insets, Point, Rect, Shape, Size, Vec2};
-use crate::piet::{
-    FontBuilder, PietTextLayout, RenderContext, Text, TextLayout, TextLayoutBuilder,
-};
+use crate::piet::{FontFamily, PietTextLayout, RenderContext, Text, TextLayout, TextLayoutBuilder};
 use crate::util::ExtendDrain;
 use crate::{
     BoxConstraints, Color, Command, Data, Env, Event, EventCtx, InternalEvent, InternalLifeCycle,
@@ -428,15 +426,11 @@ impl<T: Data, W: Widget<T>> WidgetPod<T, W> {
 
     fn make_widget_id_layout_if_needed(&mut self, id: WidgetId, ctx: &mut PaintCtx, env: &Env) {
         if self.debug_widget_text.is_none() {
-            let font = ctx
-                .text()
-                .new_font_by_name(env.get(crate::theme::FONT_NAME), 10.0)
-                .build()
-                .unwrap();
             let id_string = id.to_raw().to_string();
             self.debug_widget_text = ctx
                 .text()
-                .new_text_layout(&font, &id_string, f64::INFINITY)
+                .new_text_layout(&id_string)
+                .font(FontFamily::SYSTEM_UI, 10.0)
                 .build()
                 .ok();
         }
@@ -446,7 +440,7 @@ impl<T: Data, W: Widget<T>> WidgetPod<T, W> {
         // we clone because we need to move it for paint_with_z_index
         let text = self.debug_widget_text.clone();
         if let Some(text) = text {
-            let text_size = Size::new(text.width(), 10.0);
+            let text_size = text.size();
             let origin = ctx.size().to_vec2() - text_size.to_vec2();
             let border_color = env.get_debug_color(ctx.widget_id().to_raw());
             self.debug_paint_layout_bounds(ctx, env);
@@ -465,7 +459,7 @@ impl<T: Data, W: Widget<T>> WidgetPod<T, W> {
                 } else {
                     Color::BLACK
                 };
-                ctx.draw_text(&text, text_pos, &text_color);
+                ctx.draw_text(&text, text_pos);
             })
         }
     }

@@ -23,7 +23,7 @@ use crate::{
 
 use crate::kurbo::{Affine, Line, Point, RoundedRect, Size, Vec2};
 use crate::piet::{
-    FontBuilder, PietText, PietTextLayout, RenderContext, Text, TextLayout, TextLayoutBuilder,
+    FontFamily, PietText, PietTextLayout, RenderContext, Text, TextLayout, TextLayoutBuilder,
 };
 use crate::theme;
 
@@ -86,12 +86,12 @@ impl TextBox {
         let font_size = env.get(theme::TEXT_SIZE_NORMAL);
         // TODO: caching of both the format and the layout
         let font = piet_text
-            .new_font_by_name(font_name, font_size)
-            .build()
-            .unwrap();
+            .font_family(font_name)
+            .unwrap_or(FontFamily::SYSTEM_UI);
 
         piet_text
-            .new_text_layout(&font, &text.to_string(), std::f64::INFINITY)
+            .new_text_layout(&text.to_string())
+            .font(font, font_size)
             .build()
             .unwrap()
     }
@@ -192,24 +192,19 @@ impl TextBox {
         // We need to account for hscroll_offset state and TextBox's padding.
         let translated_point = Point::new(point.x + self.hscroll_offset - PADDING_LEFT, point.y);
         let hit_test = layout.hit_test_point(translated_point);
-        hit_test.metrics.text_position
+        hit_test.idx
     }
 
     /// Given an offset (in bytes) of a valid grapheme cluster, return
     /// the corresponding x coordinate of that grapheme on the screen.
     fn x_for_offset(&self, layout: &PietTextLayout, offset: usize) -> f64 {
-        if let Some(position) = layout.hit_test_text_position(offset) {
-            position.point.x
-        } else {
-            //TODO: what is the correct fallback here?
-            0.0
-        }
+        layout.hit_test_text_position(offset).point.x
     }
 
     /// Calculate a stateful scroll offset
     fn update_hscroll(&mut self, layout: &PietTextLayout) {
         let cursor_x = self.x_for_offset(layout, self.cursor());
-        let overall_text_width = layout.width();
+        let overall_text_width = layout.size().width;
 
         let padding = PADDING_LEFT * 2.;
         if overall_text_width < self.width {
@@ -435,7 +430,7 @@ impl Widget<String> for TextBox {
                 &text_color
             };
 
-            rc.draw_text(&text_layout, text_pos, color);
+            rc.draw_text(&text_layout, text_pos);
 
             // Draw selection rect
             if !self.selection.is_caret() {
@@ -456,7 +451,7 @@ impl Widget<String> for TextBox {
 
                 // Draw selection text
                 rc.clip(selection_rect);
-                rc.draw_text(&text_layout, text_pos, &selection_text_color);
+                rc.draw_text(&text_layout, text_pos);
             }
 
             // Paint the cursor if focused and there's no selection
