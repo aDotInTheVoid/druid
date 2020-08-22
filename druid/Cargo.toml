@@ -55,14 +55,11 @@ image = { version = "0.23.8", optional = true }
 [target.'cfg(target_arch="wasm32")'.dependencies]
 console_log = "0.2.0"
 
-<<<<<<< HEAD
 [dev-dependencies]
 float-cmp = { version = "0.8.0", features = ["std"], default-features = false }
 tempfile = "3.1.0"
 piet-common = { version = "0.2.0-pre1", features = ["png"] }
-=======
 
->>>>>>> Hack Hack Hacety Hack
 
 [[example]]
 name = "image"
